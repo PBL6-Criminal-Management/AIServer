@@ -72,8 +72,13 @@ def download_all_pages_of_folder(folder_id, folder, drive_service, isSave = Fals
             break
 
 def download_folder(folder_id, local_folder_path, isSave = False):
+    global imageCounts, images, labels
+    imageCounts = 0
+    images = []
+    labels = []
+
     credentials = service_account.Credentials.from_service_account_file(
-        'exalted-pattern-400909-3eaa10f4b2b4.json',
+        'Server/exalted-pattern-400909-3eaa10f4b2b4.json',
         scopes=['https://www.googleapis.com/auth/drive']
     )
 

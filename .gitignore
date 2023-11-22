@@ -1,5 +1,5 @@
 venv/
 instance/
-__pycache__/
-TrainedImages/
-model.yml
+Server/__pycache__/
+Server/TrainedImages/
+Server/model.yml
