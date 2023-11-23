@@ -4,6 +4,8 @@ import numpy as np
 
 from Server import globalVariables
 
+model = None
+
 def load_model(model_file):
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     recognizer.read(model_file)
@@ -19,8 +21,12 @@ def showOnScreen(image):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def detect(image):    
-    model = load_model(globalVariables.model_file)
+def detect(image):
+    global model
+ 
+    if globalVariables.isModelChanged:    
+        model = load_model(globalVariables.model_file)
+        globalVariables.isModelChanged = False
 
     image = np.frombuffer(image.read(), np.uint8)
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)

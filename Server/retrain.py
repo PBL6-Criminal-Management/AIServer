@@ -70,6 +70,7 @@ def retrain():
     if len(labels) > 0:
         train_and_save_model(images, labels, globalVariables.model_file)
         globalVariables.isTrain = True
+        globalVariables.isModelChanged = True
 
     return len(labels)
 

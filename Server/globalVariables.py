@@ -3,7 +3,7 @@ import os
 import cv2
 
 def init():
-    global isTrain, model_file, cascade_name, dataset_folder, TrainedImages_folder_id, sample_folder_id, ALLOWED_IMAGE_EXTENSIONS, MAX_FILE_SIZE_MB, MAX_DISTANCE, face_cascade
+    global isTrain, isModelChanged, model_file, cascade_name, dataset_folder, TrainedImages_folder_id, sample_folder_id, ALLOWED_IMAGE_EXTENSIONS, MAX_FILE_SIZE_MB, MAX_DISTANCE, face_cascade
     model_file = "Server/model.yml"
     cascade_name = "haarcascade_frontalface_default.xml"
     dataset_folder = "Server/TrainedImages"
@@ -23,3 +23,5 @@ def init():
         isTrain = True
     else:
         isTrain = False
+
+    isModelChanged = True
