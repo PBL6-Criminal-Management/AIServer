@@ -1,10 +1,8 @@
 import os
 import cv2
 
-from Server.download_file import download_model
-
 def init():
-    global isTrain, isModelChanged, model_file, cascade_name, dataset_folder, TrainedImages_folder_id, sample_folder_id, ALLOWED_IMAGE_EXTENSIONS, MAX_FILE_SIZE_MB, MAX_DISTANCE, face_cascade
+    global isTrain, isModelChanged, model_file, cascade_name, dataset_folder, TrainedImages_folder_id, sample_folder_id, Model_folder_id, ALLOWED_IMAGE_EXTENSIONS, MAX_FILE_SIZE_MB, MAX_DISTANCE, face_cascade
     model_file = "Server/model.yml"
     cascade_name = "haarcascade_frontalface_default.xml"
     dataset_folder = "Server/TrainedImages"
@@ -24,9 +22,6 @@ def init():
     if os.path.exists(model_file):
         isTrain = True
     else:
-        if download_model('model.yml', Model_folder_id):
-            isTrain = True
-        else:
-            isTrain = False
+        isTrain = False
 
     isModelChanged = True

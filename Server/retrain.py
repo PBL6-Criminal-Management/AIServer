@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from Server.download_file import download_folder
+from Server.download_file import download_folder, upload_model
 
 from Server import globalVariables
 
@@ -55,6 +55,7 @@ def train_and_save_model(images, labels, output_model_file):
     model = create_model()
     model.train(faces, labels)
     model.save(output_model_file)
+    upload_model(output_model_file, globalVariables.Model_folder_id)
 
 def retrain():
     # not save files into system

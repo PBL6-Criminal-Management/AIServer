@@ -5,6 +5,8 @@ from Server.retrain import retrain
 
 from Server import globalVariables
 
+from Server.download_file import download_model
+
 app = Flask(__name__)
 
 globalVariables.init()          # Call only once
@@ -55,7 +57,10 @@ def detect_face():
         return jsonify({"error": f"File bạn tải lên vượt quá kích thước cho phép ({globalVariables.MAX_FILE_SIZE_MB} MB)!"}), 400
 
     if not globalVariables.isTrain:
-        return jsonify({"message": "Mô hình AI chưa được huấn luyện!"}), 200
+        if download_model('model.yml', globalVariables.Model_folder_id):
+            globalVariables.isTrain = True
+        else:
+            return jsonify({"message": "Mô hình AI chưa được huấn luyện!"}), 200
 
     isPredictable, result, image = detect(file)
 

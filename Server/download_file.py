@@ -4,7 +4,7 @@ import cv2
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
-from googleapiclient.http import MediaIoBaseDownload
+from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 import numpy as np
 
 from Server import globalVariables
@@ -13,33 +13,53 @@ imageCounts = 0
 images = []
 labels = []
 
-def download_model(file_name, folder_id):
+def createDriveService():
     credentials = service_account.Credentials.from_service_account_file(
         'Server/exalted-pattern-400909-3eaa10f4b2b4.json',
         scopes=['https://www.googleapis.com/auth/drive']
     )
 
-    drive_service = build('drive', 'v3', credentials=credentials)
+    return build('drive', 'v3', credentials=credentials)
 
+def get_file_id_by_name(file_name, folder_id, drive_service):
     query = f"name='{file_name}' and '{folder_id}' in parents"
-    results = drive_service.files().list(q=query).execute()
+    results = drive_service.files().list(q=query, fields='files(id)').execute()
     files = results.get('files', [])
 
     if not files:
-        print(f"No file found with the name '{file_name}' in the folder.")
+        print(f"No file found with the name '{file_name}' in the folder on drive.")
+        return None
+
+    return files[0]['id']
+
+def download_model(file_name, folder_id):
+    drive_service = createDriveService()
+
+    file_id = get_file_id_by_name(file_name, folder_id, drive_service)
+
+    if file_id:
+        request = drive_service.files().get_media(fileId=file_id)
+        fh = open(globalVariables.model_file, 'wb')
+        downloader = MediaIoBaseDownload(fh, request)
+        done = False
+        while not done:
+            status, done = downloader.next_chunk()
+            print(f"Download {int(status.progress() * 100)}% file {file_name}.")
+    else:
         return False
-
-    file_id = files[0]['id']
-
-    request = drive_service.files().get_media(fileId=file_id)
-    fh = open(globalVariables.model_file, 'wb')
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while not done:
-        status, done = downloader.next_chunk()
-        print(f"Download {int(status.progress() * 100)}% file {file_name}.")
-        
+            
     return True
+
+def upload_model(file_path, folder_id):
+    media = MediaFileUpload(file_path, resumable=True)
+    drive_service = createDriveService()
+
+    file_id = get_file_id_by_name(os.path.basename(file_path), folder_id, drive_service)
+    if not file_id:
+        file_metadata = {'name': os.path.basename(file_path), 'parents': [folder_id]}
+        drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    else:
+        drive_service.files().update(fileId=file_id, media_body=media).execute()
 
 def download_file(file_id, file_name, drive_service): #download file from gg drive  
     global imageCounts
@@ -106,13 +126,8 @@ def download_folder(folder_id, local_folder_path, isSave = False):
     imageCounts = 0
     images = []
     labels = []
-
-    credentials = service_account.Credentials.from_service_account_file(
-        'Server/exalted-pattern-400909-3eaa10f4b2b4.json',
-        scopes=['https://www.googleapis.com/auth/drive']
-    )
-
-    drive_service = build('drive', 'v3', credentials=credentials)
+    
+    drive_service = createDriveService()
 
     if not os.path.exists(local_folder_path) and isSave:
         os.mkdir(local_folder_path)
