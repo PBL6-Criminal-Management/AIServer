@@ -31,17 +31,25 @@ def create_model():
 def prepare_data(images, labels):
     faces = []
 
-    for image in images:
+    count = 0
+    for index, image in enumerate(images):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray = cv2.equalizeHist(gray, gray)
 
-        face_image = globalVariables.face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
+        face_image = globalVariables.face_cascade_default.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
 
         if len(face_image) > 0:
             (x, y, w, h) = face_image[0]
             face_image = gray[y:y + h, x:x + w]
         else:
-            face_image = gray
+            face_image = globalVariables.face_cascade_profile.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
+            if len(face_image) > 0:
+                (x, y, w, h) = face_image[0]
+                face_image = gray[y:y + h, x:x + w]
+            else:
+                del labels[index - count]
+                count += 1
+                continue
 
         face_image = cv2.resize(face_image, (200, 200))
 
@@ -57,6 +65,8 @@ def train_and_save_model(images, labels, output_model_file):
     model.save(output_model_file)
     upload_model(output_model_file, globalVariables.Model_folder_id)
 
+    return len(labels)
+
 def retrain():
     # not save files into system
     images, labels = download_folder(globalVariables.TrainedImages_folder_id, globalVariables.dataset_folder)
@@ -69,9 +79,10 @@ def retrain():
     # images, labels = load_images_and_labels_from_folder(globalVariables.dataset_folder)
 
     if len(labels) > 0:
-        train_and_save_model(images, labels, globalVariables.model_file)
+        count = train_and_save_model(images, labels, globalVariables.model_file)
         globalVariables.isTrain = True
         globalVariables.isModelChanged = True
-
-    return len(labels)
+        return count    
+    else:
+        return 0
 

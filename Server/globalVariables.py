@@ -2,9 +2,8 @@ import os
 import cv2
 
 def init():
-    global isTrain, isModelChanged, model_file, cascade_name, dataset_folder, TrainedImages_folder_id, sample_folder_id, Model_folder_id, ALLOWED_IMAGE_EXTENSIONS, MAX_FILE_SIZE_MB, MAX_DISTANCE, face_cascade
+    global isTrain, isModelChanged, model_file, dataset_folder, TrainedImages_folder_id, sample_folder_id, Model_folder_id, ALLOWED_IMAGE_EXTENSIONS, MAX_FILE_SIZE_MB, MAX_DISTANCE, face_cascade_default, face_cascade_profile
     model_file = "Server/model.yml"
-    cascade_name = "haarcascade_frontalface_default.xml"
     dataset_folder = "Server/TrainedImages"
 
     #id of TrainedImages folder: 1FcPN4UNVUZHO7JL5MPSfCgIxmhmY9LC5
@@ -15,9 +14,10 @@ def init():
 
     ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     MAX_FILE_SIZE_MB = 50  # Set your maximum allowed file size in megabytes
-    MAX_DISTANCE = 95
+    MAX_DISTANCE = 50
 
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + cascade_name)
+    face_cascade_default = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    face_cascade_profile = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_profileface.xml")
 
     if os.path.exists(model_file):
         isTrain = True

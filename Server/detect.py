@@ -32,7 +32,7 @@ def detect(image):
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray = cv2.equalizeHist(gray, gray)
-    faces = globalVariables.face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
+    faces = globalVariables.face_cascade_default.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
     
     # detect all faces in image
     # for (x, y, w, h) in faces:
@@ -49,10 +49,17 @@ def detect(image):
         # gray = cv2.resize(gray, (200, 200))
         gray = gray[y:y + h, x:x + w]
     else:
-        gray = gray    
+        faces = globalVariables.face_cascade_profile.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
+        if len(faces) > 0:        
+            (x, y, w, h) = faces[0]
+            cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            # gray = cv2.resize(gray, (200, 200))
+            gray = gray[y:y + h, x:x + w]
+        else:
+            gray = gray    
     
     label, distance = model.predict(gray)
-
+    print('distance', distance)
     fontSize = 3*image.shape[1]/800
     color = (255, 255, 0)
     weight = 3

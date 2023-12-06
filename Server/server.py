@@ -59,6 +59,7 @@ def detect_face():
     if not globalVariables.isTrain:
         if download_model('model.yml', globalVariables.Model_folder_id):
             globalVariables.isTrain = True
+            globalVariables.isModelChanged = True
         else:
             return jsonify({"message": "Mô hình AI chưa được huấn luyện!"}), 200
 
