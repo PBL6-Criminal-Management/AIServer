@@ -39,12 +39,12 @@ def prepare_data(images, labels):
         face_image = globalVariables.face_cascade_default.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
 
         if len(face_image) > 0:
-            (x, y, w, h) = face_image[0]
+            (x, y, w, h) = globalVariables.getMaxFace(face_image)
             face_image = gray[y:y + h, x:x + w]
         else:
             face_image = globalVariables.face_cascade_profile.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
             if len(face_image) > 0:
-                (x, y, w, h) = face_image[0]
+                (x, y, w, h) = globalVariables.getMaxFace(face_image)
                 face_image = gray[y:y + h, x:x + w]
             else:
                 del labels[index - count]

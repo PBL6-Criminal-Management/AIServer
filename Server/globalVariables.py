@@ -25,3 +25,13 @@ def init():
         isTrain = False
 
     isModelChanged = True
+
+def getMaxFace(faces):
+    item = faces[0]; max = 0
+    for face in faces:
+        (x, y, w, h) = face
+        if(max < w*h):
+            max = w*h
+            item = (x, y, w, h)
+    
+    return item

@@ -44,14 +44,14 @@ def detect(image):
     #     print('label: ', label, 'confidence: ', confidence, '%') 
 
     if len(faces) > 0:        
-        (x, y, w, h) = faces[0]
+        (x, y, w, h) = globalVariables.getMaxFace(faces)
         cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
         # gray = cv2.resize(gray, (200, 200))
         gray = gray[y:y + h, x:x + w]
     else:
         faces = globalVariables.face_cascade_profile.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
         if len(faces) > 0:        
-            (x, y, w, h) = faces[0]
+            (x, y, w, h) = globalVariables.getMaxFace(faces)
             cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
             # gray = cv2.resize(gray, (200, 200))
             gray = gray[y:y + h, x:x + w]
