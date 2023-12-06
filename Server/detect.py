@@ -1,6 +1,7 @@
 import base64
 import cv2
 import numpy as np
+import face_recognition
 
 from Server import globalVariables
 
@@ -31,32 +32,17 @@ def detect(image):
     image = np.frombuffer(image.read(), np.uint8)
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    gray = cv2.equalizeHist(gray, gray)
-    faces = globalVariables.face_cascade_default.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
-    
-    # detect all faces in image
-    # for (x, y, w, h) in faces:
-    #     cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
-
-    #     roi_gray = gray[y:y + h, x:x + w]
-    #     label, confidence = model.predict(roi_gray)
-    #     cv2.putText(image, f'Id: {str(label)}', (x - 5, y - 7), cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 0, 0), 3)
-    #     print('label: ', label, 'confidence: ', confidence, '%') 
+    gray = cv2.equalizeHist(gray, gray)    
+    # faces = face_recognition.face_locations(image, number_of_times_to_upsample=1, model="cnn")    
+    faces = face_recognition.face_locations(image) # model = hog by default
 
     if len(faces) > 0:        
-        (x, y, w, h) = globalVariables.getMaxFace(faces)
-        cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        (left, top, right, bottom) = globalVariables.getMaxFace(faces)
+        cv2.rectangle(image, (left, top), (right, bottom), (255, 0, 0), 2)
         # gray = cv2.resize(gray, (200, 200))
-        gray = gray[y:y + h, x:x + w]
+        gray = gray[top:bottom, left:right]
     else:
-        faces = globalVariables.face_cascade_profile.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
-        if len(faces) > 0:        
-            (x, y, w, h) = globalVariables.getMaxFace(faces)
-            cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
-            # gray = cv2.resize(gray, (200, 200))
-            gray = gray[y:y + h, x:x + w]
-        else:
-            gray = gray    
+        gray = gray    
     
     label, distance = model.predict(gray)
     print('distance', distance)
@@ -64,7 +50,7 @@ def detect(image):
     color = (255, 255, 0)
     weight = 3
 
-    pos = (x - 5, y - 7) if len(faces) > 0 else (30, 30)
+    pos = (left - 5, top - 7) if len(faces) > 0 else (30, 30)
 
     if distance < globalVariables.MAX_DISTANCE: 
         cv2.putText(image, f'Id: {str(label)}', pos, cv2.FONT_HERSHEY_SIMPLEX, fontSize, color, weight)

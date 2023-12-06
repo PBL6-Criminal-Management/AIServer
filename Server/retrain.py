@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 from PIL import Image
+import face_recognition
 
 from Server.download_file import download_folder, upload_model
 
@@ -36,20 +37,17 @@ def prepare_data(images, labels):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray = cv2.equalizeHist(gray, gray)
 
-        face_image = globalVariables.face_cascade_default.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
+        # face_images = face_recognition.face_locations(image, number_of_times_to_upsample=1, model="cnn")
+        face_images = face_recognition.face_locations(image) # model = hog by default
+        
 
-        if len(face_image) > 0:
-            (x, y, w, h) = globalVariables.getMaxFace(face_image)
-            face_image = gray[y:y + h, x:x + w]
+        if len(face_images) > 0:
+            (left, top, right, bottom) = globalVariables.getMaxFace(face_images)
+            face_image = gray[top:bottom, left:right]
         else:
-            face_image = globalVariables.face_cascade_profile.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30))
-            if len(face_image) > 0:
-                (x, y, w, h) = globalVariables.getMaxFace(face_image)
-                face_image = gray[y:y + h, x:x + w]
-            else:
-                del labels[index - count]
-                count += 1
-                continue
+            del labels[index - count]
+            count += 1
+            continue
 
         face_image = cv2.resize(face_image, (200, 200))
 
