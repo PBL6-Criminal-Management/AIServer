@@ -37,7 +37,7 @@ def allowed_file(file):
 def is_file_size_allowed(file):
     # Check if the file size is within the allowed limit
     fileLength = len(file.read())
-    # print(fileLength)
+    # print(fileLength, flush=True)
     file.seek(0)
     return fileLength <= globalVariables.MAX_FILE_SIZE_MB * 1024 * 1024  # Convert MB to bytes
 

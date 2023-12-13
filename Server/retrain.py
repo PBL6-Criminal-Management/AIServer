@@ -71,7 +71,7 @@ def retrain():
 
     # save files (Consumes a lot of memory)
     # count = download_folder(globalVariables.sample_folder_id, globalVariables.dataset_folder, True)
-    # print(f'Download file counts: {count}')
+    # print(f'Download file counts: {count}', flush=True)
     # if not os.path.exists(globalVariables.dataset_folder):
     #     return 0
     # images, labels = load_images_and_labels_from_folder(globalVariables.dataset_folder)

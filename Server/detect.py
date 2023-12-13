@@ -45,7 +45,7 @@ def detect(image):
         gray = gray    
     
     label, distance = model.predict(gray)
-    print('distance', distance)
+    print('distance', distance, flush=True)
     fontSize = 3*image.shape[1]/800
     color = (255, 255, 0)
     weight = 3
@@ -55,7 +55,7 @@ def detect(image):
     if distance < globalVariables.MAX_DISTANCE: 
         cv2.putText(image, f'Id: {str(label)}', pos, cv2.FONT_HERSHEY_SIMPLEX, fontSize, color, weight)
         confidence = (1 - distance/globalVariables.MAX_DISTANCE) * 100
-        print('label: ', label, 'confidence: ', confidence, '%')    
+        print('label: ', label, 'confidence: ', confidence, '%', flush=True)    
 
         _, img_encoded = cv2.imencode('.png', image)
         img_base64 = base64.b64encode(img_encoded.tobytes()).decode('utf-8')

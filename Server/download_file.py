@@ -27,7 +27,7 @@ def get_file_id_by_name(file_name, folder_id, drive_service):
     files = results.get('files', [])
 
     if not files:
-        print(f"No file found with the name '{file_name}' in the folder on drive.")
+        print(f"No file found with the name '{file_name}' in the folder on drive.", flush=True)
         return None
 
     return files[0]['id']
@@ -44,7 +44,7 @@ def download_model(file_name, folder_id):
         done = False
         while not done:
             status, done = downloader.next_chunk()
-            print(f"Download {int(status.progress() * 100)}% file {file_name}.")
+            print(f"Download {int(status.progress() * 100)}% file {file_name}.", flush=True)
     else:
         return False
             
@@ -70,7 +70,7 @@ def download_file(file_id, file_name, drive_service): #download file from gg dri
     done = False
     while not done:
         status, done = downloader.next_chunk()
-        print(f"Download {int(status.progress() * 100)}% file {file_name}.")
+        print(f"Download {int(status.progress() * 100)}% file {file_name}.", flush=True)
 
     imageCounts += 1
 
